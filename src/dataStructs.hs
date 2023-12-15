@@ -14,16 +14,10 @@ type Code = [Inst]
 data StackValue = Value Integer | TT | FF deriving (Show, Eq)
 type Stack = [StackValue]
 
-stackExample :: Stack
-stackExample = [Value 5, Value 3, TT, FF, Value 2]
-
 type Key = String
 type Value = StackValue
 
 type State = HashMap.Map Key Value
-
-stateExample :: State
-stateExample = HashMap.fromList [("a", Value 3), ("someVar", FF), ("var", TT)]
 
 -- Create an empty stack
 createEmptyStack :: Stack
