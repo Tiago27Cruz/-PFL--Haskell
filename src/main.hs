@@ -1,3 +1,5 @@
+import qualified Data.Map.Strict as HashMap
+
 -- Do not modify our definition of Inst and Code
 data Inst =
   Push Integer | Add | Mult | Sub | Tru | Fals | Equ | Le | And | Neg | Fetch String | Store String | Noop |
@@ -8,18 +10,22 @@ type Code = [Inst]
 data StackValue = Value Integer | TT | FF deriving (Show, Eq)
 type Stack = [StackValue]
 
+type Key = String
+type Value = StackValue
+
+type State = HashMap.Map Key Value
+
 createEmptyStack :: Stack
-createEmptyStack = undefined -- TODO, Uncomment the function signature after defining Stack
+createEmptyStack = undefined
 
 stack2Str :: Stack -> String
-stack2Str = undefined -- TODO, Uncomment all the other function type declarations as you implement them
+stack2Str = undefined
 
--- createEmptyState :: State
-createEmptyState :: a
-createEmptyState = undefined -- TODO, Uncomment the function signature after defining State
+createEmptyState :: State
+createEmptyState = undefined
 
--- state2Str :: State -> String
-state2Str = undefined -- TODO
+state2Str :: State -> String
+state2Str = undefined
 
--- run :: (Code, Stack, State) -> (Code, Stack, State)
-run = undefined -- TODO
+run :: (Code, Stack, State) -> (Code, Stack, State)
+run = undefined
