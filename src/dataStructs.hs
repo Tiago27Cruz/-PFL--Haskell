@@ -31,13 +31,13 @@ createEmptyStack = []
 
 -- Receives a stack and returns a string with the values of the stack separated by commas
 stack2Str :: Stack -> String
-stack2Str = intercalate "," . map showStackValue . reverse
+stack2Str = intercalate "," . map stackValue2Str . reverse
 
 -- Receives a StackValue and returns a string with the value of the StackValue
-showStackValue :: StackValue -> String
-showStackValue (Value x) = show x
-showStackValue TT = "True"
-showStackValue FF = "False"
+stackValue2Str :: StackValue -> String
+stackValue2Str (Value x) = show x
+stackValue2Str TT = "True"
+stackValue2Str FF = "False"
 
 -- Create an empty state
 createEmptyState :: State
@@ -45,8 +45,8 @@ createEmptyState = HashMap.empty
 
 -- Receives a state and returns a string with the values of the state separated by commas
 state2Str :: State -> String
-state2Str = intercalate "," . map showPair . sortOn fst . HashMap.toList
+state2Str = intercalate "," . map pair2Str . sortOn fst . HashMap.toList
 
 -- Receives a pair (key, value) and returns a string with the key and the value separated by an equal sign
-showPair :: (Key, Value) -> String
-showPair (k, v) = k ++ "=" ++ showStackValue v
+pair2Str :: (Key, Value) -> String
+pair2Str (k, v) = k ++ "=" ++ stackValue2Str v
