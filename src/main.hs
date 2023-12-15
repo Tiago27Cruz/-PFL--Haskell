@@ -20,6 +20,13 @@ mult stack =
         (Value n1):(Value n2):rest -> Value (n1 * n2):rest
         _ -> error "Run-time error"
 
+-- Receives a stack, subtracts the two topmost values (in particular the first with the second) and pushes the result to the stack after removing the two topmost values
+sub :: Stack -> Stack
+sub stack =
+    case stack of
+        (Value n1):(Value n2):rest -> Value (n1 - n2):rest
+        _ -> error "Run-time error"
+
 run :: (Code, Stack, State) -> (Code, Stack, State)
 run ([], stack, state) = ([], stack, state)
 run (code:rest, stack, state) = 
@@ -29,6 +36,7 @@ run (code:rest, stack, state) =
         Fals -> run (rest, push (Right False) stack, state)
         Add -> run (rest, add stack, state)
         Mult -> run (rest, mult stack, state)
+        Sub -> run (rest, sub stack, state)
 
 
 testAssembler :: Code -> (String, String)
