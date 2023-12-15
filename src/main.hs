@@ -26,12 +26,12 @@ createEmptyStack :: Stack
 createEmptyStack = []
 
 stack2Str :: Stack -> String
-stack2Str = intercalate "," . map stack2Str_aux . reverse
+stack2Str = intercalate "," . map showStackValue . reverse
 
-stack2Str_aux :: StackValue -> String
-stack2Str_aux (Value x) = show x
-stack2Str_aux TT = "True"
-stack2Str_aux FF = "False"
+showStackValue :: StackValue -> String
+showStackValue (Value x) = show x
+showStackValue TT = "True"
+showStackValue FF = "False"
 
 createEmptyState :: State
 createEmptyState = HashMap.empty
@@ -40,7 +40,7 @@ state2Str :: State -> String
 state2Str = intercalate "," . map showPair . sortOn fst . HashMap.toList
 
 showPair :: (Key, Value) -> String
-showPair (k, v) = k ++ "=" ++ stack2Str_aux v
+showPair (k, v) = k ++ "=" ++ showStackValue v
 
 run :: (Code, Stack, State) -> (Code, Stack, State)
 run = undefined
