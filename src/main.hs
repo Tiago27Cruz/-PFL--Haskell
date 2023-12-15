@@ -1,5 +1,5 @@
 import qualified Data.Map.Strict as HashMap
-import Data.List (intercalate)
+import Data.List (intercalate, sortOn)
 
 -- Do not modify our definition of Inst and Code
 data Inst =
@@ -19,6 +19,9 @@ type Value = StackValue
 
 type State = HashMap.Map Key Value
 
+stateExample :: State
+stateExample = HashMap.fromList [("a", Value 3), ("someVar", FF), ("var", TT)]
+
 createEmptyStack :: Stack
 createEmptyStack = []
 
@@ -34,7 +37,10 @@ createEmptyState :: State
 createEmptyState = HashMap.empty
 
 state2Str :: State -> String
-state2Str = undefined
+state2Str = intercalate "," . map showPair . sortOn fst . HashMap.toList
+
+showPair :: (Key, Value) -> String
+showPair (k, v) = k ++ "=" ++ stack2Str_aux v
 
 run :: (Code, Stack, State) -> (Code, Stack, State)
 run = undefined
