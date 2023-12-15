@@ -1,9 +1,9 @@
 import DataStructs
 
-pushN :: StackValue -> Stack -> Stack
-pushN TT stack = TT:stack
-pushN FF stack = FF:stack
-pushN n stack = n:stack
+pushN :: Either Integer Bool -> Stack -> Stack
+pushN (Right True) stack = TT:stack
+pushN (Right False) stack = FF:stack
+pushN (Left n) stack = Value n:stack
 
 run :: (Code, Stack, State) -> (Code, Stack, State)
 run = undefined
