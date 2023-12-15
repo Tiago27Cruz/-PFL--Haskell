@@ -16,7 +16,7 @@ type Value = StackValue
 type State = HashMap.Map Key Value
 
 createEmptyStack :: Stack
-createEmptyStack = undefined
+createEmptyStack = []
 
 stack2Str :: Stack -> String
 stack2Str = undefined
