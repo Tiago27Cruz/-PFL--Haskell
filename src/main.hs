@@ -11,9 +11,7 @@ add :: Stack -> Stack
 add stack =
     case stack of
         (Value n1):(Value n2):rest -> Value (n1 + n2):rest
-        TT:rest -> TT:add rest
-        FF:rest -> FF:add rest
-        _ -> error "Invalid Add Operation"
+        _ -> error "Run-time error"
 
 
 run :: (Code, Stack, State) -> (Code, Stack, State)
