@@ -22,7 +22,7 @@ stack2Str :: Stack -> String
 stack2Str = undefined
 
 createEmptyState :: State
-createEmptyState = undefined
+createEmptyState = HashMap.empty
 
 state2Str :: State -> String
 state2Str = undefined
