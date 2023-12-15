@@ -6,13 +6,19 @@ push (Right True) stack = TT:stack
 push (Right False) stack = FF:stack
 push (Left n) stack = Value n:stack
 
--- Receives a stack, adds the two topmost integers and pushes the result to the stack after removing the two topmost integers
+-- Receives a stack, adds the two topmost values and pushes the result to the stack after removing the two topmost values
 add :: Stack -> Stack
 add stack =
     case stack of
         (Value n1):(Value n2):rest -> Value (n1 + n2):rest
         _ -> error "Run-time error"
 
+-- Receives a stack, multiplies the two topmost values and pushes the result to the stack after removing the two topmost values
+mult :: Stack -> Stack
+mult stack =
+    case stack of
+        (Value n1):(Value n2):rest -> Value (n1 * n2):rest
+        _ -> error "Run-time error"
 
 run :: (Code, Stack, State) -> (Code, Stack, State)
 run ([], stack, state) = ([], stack, state)
@@ -22,6 +28,7 @@ run (code:rest, stack, state) =
         Tru -> run (rest, push (Right True) stack, state)
         Fals -> run (rest, push (Right False) stack, state)
         Add -> run (rest, add stack, state)
+        Mult -> run (rest, mult stack, state)
 
 
 testAssembler :: Code -> (String, String)
