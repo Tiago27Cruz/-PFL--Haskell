@@ -1,4 +1,5 @@
 import qualified Data.Map.Strict as HashMap
+import Data.List (intercalate)
 
 -- Do not modify our definition of Inst and Code
 data Inst =
@@ -10,6 +11,9 @@ type Code = [Inst]
 data StackValue = Value Integer | TT | FF deriving (Show, Eq)
 type Stack = [StackValue]
 
+stackExample :: Stack
+stackExample = [Value 5, Value 3, TT, FF, Value 2]
+
 type Key = String
 type Value = StackValue
 
@@ -19,7 +23,12 @@ createEmptyStack :: Stack
 createEmptyStack = []
 
 stack2Str :: Stack -> String
-stack2Str = undefined
+stack2Str = intercalate "," . map stack2Str_aux . reverse
+
+stack2Str_aux :: StackValue -> String
+stack2Str_aux (Value x) = show x
+stack2Str_aux TT = "True"
+stack2Str_aux FF = "False"
 
 createEmptyState :: State
 createEmptyState = HashMap.empty
