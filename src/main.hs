@@ -45,6 +45,24 @@ le stack =
         (Value n1):(Value n2):rest -> if n1 <= n2 then TT:rest else FF:rest
         _ -> error "Run-time error"
 
+-- Receives a stack, does a AND operation with the two topmost booleans and pushes the result to the stack after removing the two topmost values
+and :: Stack -> Stack
+and stack =
+    case stack of
+        TT:TT:rest -> TT:rest
+        FF:FF:rest -> FF:rest
+        TT:FF:rest -> FF:rest
+        FF:TT:rest -> FF:rest
+        _ -> error "Run-time error"
+
+-- Receives a stack, negates the topmost boolean and pushes the result to the stack after removing the topmost value
+neg :: Stack -> Stack
+neg stack =
+    case stack of
+        TT:rest -> FF:rest
+        FF:rest -> TT:rest
+        _ -> error "Run-time error"
+
 
 run :: (Code, Stack, State) -> (Code, Stack, State)
 run ([], stack, state) = ([], stack, state)
