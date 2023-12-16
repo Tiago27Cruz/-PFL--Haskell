@@ -46,8 +46,8 @@ le stack =
         _ -> error "Run-time error"
 
 -- Receives a stack, does a AND operation with the two topmost booleans and pushes the result to the stack after removing the two topmost values
-and :: Stack -> Stack
-and stack =
+ande :: Stack -> Stack
+ande stack =
     case stack of
         TT:TT:rest -> TT:rest
         FF:FF:rest -> FF:rest
@@ -75,6 +75,9 @@ run (code:rest, stack, state) =
         Mult -> run (rest, mult stack, state)
         Sub -> run (rest, sub stack, state)
         Equ -> run (rest, eq stack, state)
+        Le -> run (rest, le stack, state)
+        And -> run (rest, ande stack, state)
+        Neg -> run (rest, neg stack, state)
 
 
 testAssembler :: Code -> (String, String)
