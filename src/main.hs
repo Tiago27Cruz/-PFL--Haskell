@@ -38,6 +38,12 @@ eq stack =
         FF:TT:rest -> FF:rest
         _ -> error "Run-time error"
 
+-- Receives a stack, compares the two topmost values and pushes the result to the stack after removing the two topmost values. If the first value is less or equal than the second, it pushes TT, otherwise FF
+le :: Stack -> Stack
+le stack =
+    case stack of
+        (Value n1):(Value n2):rest -> if n1 <= n2 then TT:rest else FF:rest
+        _ -> error "Run-time error"
 
 
 run :: (Code, Stack, State) -> (Code, Stack, State)
