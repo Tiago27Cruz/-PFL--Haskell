@@ -1,4 +1,5 @@
 import DataStructs
+import qualified Data.Map.Strict as HashMap
 
 -- Pushes a StackValue to the stack
 push :: Either Integer Bool -> Stack -> Stack
@@ -63,6 +64,23 @@ neg stack =
         FF:rest -> TT:rest
         _ -> error "Run-time error"
 
+-- Pushes to the stack the StackValue bound to the Key received (x) in the state
+fetch :: String -> Stack -> State -> Stack
+fetch x stack state =
+    case HashMap.lookup x state of
+        Just (Value n) -> push (Left n) stack
+        Just TT -> push (Right True) stack
+        Just FF -> push (Right False) stack
+        Nothing -> error "Run-time error"
+
+-- Pops the topmost StackValue of the stack and binds it to the Key received (x) in the state
+store :: String -> Stack -> State -> (Stack, State)
+store x stack state =
+    case stack of
+        (Value n):rest -> (rest, HashMap.insert x (Value n) state)
+        TT:rest -> (rest, HashMap.insert x TT state)
+        FF:rest -> (rest, HashMap.insert x FF state)
+        _ -> error "Run-time error"
 
 run :: (Code, Stack, State) -> (Code, Stack, State)
 run ([], stack, state) = ([], stack, state)
@@ -78,6 +96,10 @@ run (code:rest, stack, state) =
         Le -> run (rest, le stack, state)
         And -> run (rest, ande stack, state)
         Neg -> run (rest, neg stack, state)
+        Fetch x -> run(rest, fetch x stack state, state)
+        Store x -> do
+            let (newStack, newState) = store x stack state
+            run(rest, newStack, newState)
 
 
 testAssembler :: Code -> (String, String)
