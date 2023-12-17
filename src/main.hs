@@ -82,6 +82,10 @@ store x stack state =
         FF:rest -> (rest, HashMap.insert x FF state)
         _ -> error "Run-time error"
 
+-- Pops the topmost StackValue of the stack and binds it to the Key received (x) in the state
+noop :: Stack -> State -> (Stack, State)
+noop stack state = (stack, state)
+
 run :: (Code, Stack, State) -> (Code, Stack, State)
 run ([], stack, state) = ([], stack, state)
 run (code:rest, stack, state) = 
@@ -99,6 +103,9 @@ run (code:rest, stack, state) =
         Fetch x -> run(rest, fetch x stack state, state)
         Store x -> do
             let (newStack, newState) = store x stack state
+            run(rest, newStack, newState)
+        Noop -> do
+            let (newStack, newState) = noop stack state
             run(rest, newStack, newState)
 
 
