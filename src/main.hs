@@ -82,9 +82,17 @@ store x stack state =
         FF:rest -> (rest, HashMap.insert x FF state)
         _ -> error "Run-time error"
 
--- Pops the topmost StackValue of the stack and binds it to the Key received (x) in the state
+-- Returns the input stack and state
 noop :: Stack -> State -> (Stack, State)
 noop stack state = (stack, state)
+
+-- Pops the topmost StackValue of the stack and returns the first Code received (c1) if that value was TT, the second Code received (c2) if it was FF and fails otherwise
+branch :: Code -> Code -> Stack -> (Code, Stack)
+branch c1 c2 stack =
+    case stack of
+        TT:rest -> (c1, rest)
+        FF:rest -> (c2, rest)
+        _ -> error "Run-time error"
 
 run :: (Code, Stack, State) -> (Code, Stack, State)
 run ([], stack, state) = ([], stack, state)
@@ -107,6 +115,9 @@ run (code:rest, stack, state) =
         Noop -> do
             let (newStack, newState) = noop stack state
             run(rest, newStack, newState)
+        Branch c1 c2 -> do
+            let (newRest, newStack) = branch c1 c2 stack
+            run(newRest++rest, newStack, state)
 
 
 testAssembler :: Code -> (String, String)
