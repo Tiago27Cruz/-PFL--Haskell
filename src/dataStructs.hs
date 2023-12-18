@@ -25,7 +25,7 @@ createEmptyStack = []
 
 -- Receives a stack and returns a string with the values of the stack separated by commas
 stack2Str :: Stack -> String
-stack2Str = intercalate "," . map stackValue2Str . reverse
+stack2Str = intercalate "," . map stackValue2Str
 
 -- Receives a StackValue and returns a string with the value of the StackValue
 stackValue2Str :: StackValue -> String

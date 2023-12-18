@@ -92,10 +92,9 @@ branch c1 c2 stack =
     case stack of
         TT:rest -> (c1, rest)
         FF:rest -> (c2, rest)
-        -- interpretation issue, does "If the top of the stack is not a truth value, the machine will halt" mean it ends or throws an error
-        -- (Value n):rest -> ([], rest)
         _ -> error "Run-time error"
 
+-- Used to loop through the two received Codes, c1 and c2, in that order. Returns a Code made of c1 followed by a Branch between c2 followed the loop itelf, and a Noop
 loop :: Code -> Code -> Code
 loop c1 c2 =
     c1 ++ [Branch (c2 ++ [Loop c1 c2]) [Noop]]
