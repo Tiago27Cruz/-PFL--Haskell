@@ -92,7 +92,14 @@ branch c1 c2 stack =
     case stack of
         TT:rest -> (c1, rest)
         FF:rest -> (c2, rest)
+        -- interpretation issue, does "If the top of the stack is not a truth value, the machine will halt" mean it ends or throws an error
+        -- (Value n):rest -> ([], rest)
         _ -> error "Run-time error"
+
+loop :: Code -> Code -> Code
+loop c1 c2 =
+    c1 ++ [Branch (c2 ++ [Loop c1 c2]) [Noop]]
+
 
 run :: (Code, Stack, State) -> (Code, Stack, State)
 run ([], stack, state) = ([], stack, state)
@@ -118,6 +125,7 @@ run (code:rest, stack, state) =
         Branch c1 c2 -> do
             let (newRest, newStack) = branch c1 c2 stack
             run(newRest++rest, newStack, state)
+        Loop c1 c2 -> run(loop c1 c2 ++ rest, stack, state)
 
 
 testAssembler :: Code -> (String, String)
