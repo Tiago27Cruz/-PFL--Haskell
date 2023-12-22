@@ -44,3 +44,11 @@ state2Str = intercalate "," . map pair2Str . sortOn fst . HashMap.toList
 -- Receives a pair (key, value) and returns a string with the key and the value separated by an equal sign
 pair2Str :: (Key, Value) -> String
 pair2Str (k, v) = k ++ "=" ++ stackValue2Str v
+
+----- Compiler data structures -----
+
+data Aexp = Num Integer | Var String | AddAexp Aexp Aexp | MultAexp Aexp Aexp | SubAexp Aexp Aexp deriving Show
+
+data Bexp = TruBexp | FalsBexp | NegBexp Bexp | EquBexp Aexp Aexp | LeBexp Aexp Aexp | AndBexp Bexp Bexp deriving Show
+
+data Stm = AssignStm String Aexp | IfStm Bexp Stm Stm | WhileStm Bexp Stm | NoopStm deriving Show 
