@@ -43,7 +43,7 @@ lexer (char:rest) =
         '/' -> "/" : lexer rest -- Should Seperate Numbers
         _ -> (char :
             takeWhile (\x -> x /= ' ' && x /= '(' && x /= ')' && x /= ';' && x /= '=' && x /= '+' && x /= '-' && x /= '*' && x /= '/') rest) : -- While x is different of any of these, it will save them in it's own space
-            lexer (dropWhile (\x -> x /= ' ' && x /= '(' && x /= ')' && x /= ';' && x /= '=' && x /= '+' && x /= '-' && x /= '*' && x /= '/') rest)
+            lexer (dropWhile (\x -> x /= ' ' && x /= '(' && x /= ')' && x /= ';' && x /= '=' && x /= '+' && x /= '-' && x /= '*' && x /= '/') rest) -- Skips over the rest of the characters of the string that aren't these, so it doesnt parse something like ["12", "2"]
 
 parse :: String -> [Stm]
 parse [] = []
