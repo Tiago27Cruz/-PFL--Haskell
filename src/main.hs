@@ -1,6 +1,32 @@
 import Assembler
 import DataStructs
 
+compA :: Aexp -> Code
+compA command =
+    case command of
+        Num n -> [Push n]
+        Var x -> [Fetch x]
+        AddAexp a1 a2 -> compA a1 ++ compA a2 ++ [Add]
+        MultAexp a1 a2 -> compA a1 ++ compA a2 ++ [Mult]
+        SubAexp a1 a2 -> compA a1 ++ compA a2 ++ [Sub]
+
+compB :: Bexp -> Code
+compB command =
+    case command of
+        TruBexp -> [Tru]
+        FalsBexp -> [Fals]
+        NegBexp b -> compB b ++ [Neg]
+        EquBexp a1 a2 -> compA a1 ++ compA a2 ++ [Equ]
+        LeBexp a1 a2 -> compA a1 ++ compA a2 ++ [Le]
+        AndBexp b1 b2 -> compB b1 ++ compB b2 ++ [And]
+
+
+compile :: [Stm] -> Code
+compile [] = []
+compile (command:rest) =
+    case command of
+        AssignStm x a -> compA a ++ [Store x] ++ compile rest
+
 
 run :: (Code, Stack, State) -> (Code, Stack, State)
 run ([], stack, state) = ([], stack, state)

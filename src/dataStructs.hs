@@ -47,10 +47,16 @@ pair2Str (k, v) = k ++ "=" ++ stackValue2Str v
 
 ----- Compiler data structures -----
 
-data Aexp = Num Integer | Var String | AddAexp Aexp Aexp | MultAexp Aexp Aexp | SubAexp Aexp Aexp deriving Show
+data Aexp = 
+  Num Integer | Var String | AddAexp Aexp Aexp | MultAexp Aexp Aexp | SubAexp Aexp Aexp 
+  deriving Show
 
-data Bexp = TruBexp | FalsBexp | NegBexp Bexp | EquBexp Aexp Aexp | LeBexp Aexp Aexp | AndBexp Bexp Bexp deriving Show
+data Bexp = 
+  TruBexp | FalsBexp | NegBexp Bexp | EquBexp Aexp Aexp | LeBexp Aexp Aexp | AndBexp Bexp Bexp 
+  deriving Show
 
-data Stm = AssignStm String Aexp | IfStm Bexp Stm Stm | WhileStm Bexp Stm | NoopStm deriving Show 
+data Stm = 
+  AssignStm String Aexp | IfStm Bexp Stm Stm | WhileStm Bexp Stm | NoopStm 
+  deriving Show 
 
 type App = [Stm]
