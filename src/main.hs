@@ -27,6 +27,29 @@ compile (command:rest) =
     case command of
         AssignStm x a -> compA a ++ [Store x] ++ compile rest
 
+-- Auxiliary function for parse. Receives a string and splits it into a list of tokens (as a list of strings)
+lexer :: String -> [String]
+lexer [] = []
+lexer (char:rest) =
+    case char of
+        ' ' -> lexer rest -- We ignore spaces
+        '(' -> "(" : lexer rest -- Should Seperate Numbers
+        ')' -> ")" : lexer rest -- Should Seperate Numbers
+        ';' -> ";" : lexer rest -- Should Seperate Numbers
+        '=' -> "=" : lexer rest -- Should Seperate Numbers
+        '+' -> "+" : lexer rest -- Should Seperate Numbers
+        '-' -> "-" : lexer rest -- Should Seperate Numbers
+        '*' -> "*" : lexer rest -- Should Seperate Numbers
+        '/' -> "/" : lexer rest -- Should Seperate Numbers
+        _ -> (char :
+            takeWhile (\x -> x /= ' ' && x /= '(' && x /= ')' && x /= ';' && x /= '=' && x /= '+' && x /= '-' && x /= '*' && x /= '/') rest) : -- While x is different of any of these, it will save them in it's own space
+            lexer (dropWhile (\x -> x /= ' ' && x /= '(' && x /= ')' && x /= ';' && x /= '=' && x /= '+' && x /= '-' && x /= '*' && x /= '/') rest)
+
+parse :: String -> [Stm]
+parse [] = []
+parse (char:rest) =
+    case char of
+        ' ' -> parse rest
 
 run :: (Code, Stack, State) -> (Code, Stack, State)
 run ([], stack, state) = ([], stack, state)
