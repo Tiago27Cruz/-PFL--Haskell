@@ -21,11 +21,15 @@ compB command =
         AndBexp b1 b2 -> compB b1 ++ compB b2 ++ [And]
 
 
-compile :: [Stm] -> Code
+compile :: App -> Code
 compile [] = []
 compile (command:rest) =
     case command of
+        Aexp a -> compA a ++ compile rest
+        Bexp b -> compB b ++ compile rest
         AssignStm x a -> compA a ++ [Store x] ++ compile rest
+        IfStm x a b -> compB x ++ [Branch (compile a) (compile b)] ++ compile rest
+        WhileStm x a -> [Loop (compB x) (compile a)] ++ compile rest
 
 -- Auxiliary function for parse. Receives a string and splits it into a list of tokens (as a list of strings)
 lexer :: String -> [String]
