@@ -1,9 +1,13 @@
 import Assembler
 import DataStructs
 import Compiler
+import Data.Char (isDigit)
 
-buildData :: [String] -> [Stm]
+buildData :: [String] -> App
 buildData [] = []
+buildData list = do
+    let (stm, rest) = break (== ";") list
+    buildStm stm : buildData (tail rest)
 
 buildStm :: [String] -> Stm
 buildStm list = 
@@ -11,10 +15,10 @@ buildStm list =
         "if" -> do
             let (bexp, rest) = break (== "then") list
                 (stm1, stm2) = break (== "else") (tail rest)
-            IfStm (buildBexp (tail bexp)) (buildStm (tail stm1)) (buildStm (tail stm2))
+            IfStm (buildBexp (tail bexp)) [buildStm (tail stm1)] [buildStm (tail stm2)]
         "while" -> do
             let (bexp, stm) = break (== "do") list
-            WhileStm (buildBexp (tail bexp)) (buildStm (tail stm))
+            WhileStm (buildBexp (tail bexp)) [buildStm (tail stm)]
         _ -> do
             let (var, aexp) = break (== "=") list
             AssignStm (head var) (buildAexp (tail aexp))
@@ -26,7 +30,7 @@ lastPlusOrMinus strs = if null filtered then Nothing else Just (last filtered)
   where filtered = filter (\x -> x == "+" || x == "-") strs
 
 buildAexp :: [String] -> Aexp
-buildAexp [x] = Num (read x)
+buildAexp [x] = if all isDigit x then Num (read x) else Var x
 buildAexp list = 
     case lastPlusOrMinus list of
         Just "+" -> do
@@ -49,6 +53,11 @@ buildBexp [x] =
         "False" -> FalsBexp
         _ -> error "Run-time error"
 
+
 parse :: String -> [Stm]
 parse = buildData . lexer
 
+
+testParser :: String -> (String, String)
+testParser programCode = (stack2Str stack, state2Str store)
+  where (_,stack,store) = run(compile (parse programCode), createEmptyStack, createEmptyState)

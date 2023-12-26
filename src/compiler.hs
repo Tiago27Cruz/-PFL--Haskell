@@ -9,9 +9,9 @@ compA command =
     case command of
         Num n -> [Push n]
         Var x -> [Fetch x]
-        AddAexp a1 a2 -> compA a1 ++ compA a2 ++ [Add]
-        MultAexp a1 a2 -> compA a1 ++ compA a2 ++ [Mult]
-        SubAexp a1 a2 -> compA a1 ++ compA a2 ++ [Sub]
+        AddAexp a1 a2 -> compA a2 ++ compA a1 ++ [Add]
+        MultAexp a1 a2 -> compA a2 ++ compA a1 ++ [Mult]
+        SubAexp a1 a2 -> compA a2 ++ compA a1 ++ [Sub]
 
 -- Compiles a boolean expression into a list of instructions
 compB :: Bexp -> Code
@@ -21,7 +21,7 @@ compB command =
         FalsBexp -> [Fals]
         NegBexp b -> compB b ++ [Neg]
         EquBexp a1 a2 -> compA a1 ++ compA a2 ++ [Equ]
-        LeBexp a1 a2 -> compA a1 ++ compA a2 ++ [Le]
+        LeBexp a1 a2 -> compA a2 ++ compA a1 ++ [Le]
         AndBexp b1 b2 -> compB b1 ++ compB b2 ++ [And]
 
 -- Compiles the application into a list of instructions
