@@ -1,58 +1,26 @@
 import Assembler
 import DataStructs
-
-compA :: Aexp -> Code
-compA command =
-    case command of
-        Num n -> [Push n]
-        Var x -> [Fetch x]
-        AddAexp a1 a2 -> compA a1 ++ compA a2 ++ [Add]
-        MultAexp a1 a2 -> compA a1 ++ compA a2 ++ [Mult]
-        SubAexp a1 a2 -> compA a1 ++ compA a2 ++ [Sub]
-
-compB :: Bexp -> Code
-compB command =
-    case command of
-        TruBexp -> [Tru]
-        FalsBexp -> [Fals]
-        NegBexp b -> compB b ++ [Neg]
-        EquBexp a1 a2 -> compA a1 ++ compA a2 ++ [Equ]
-        LeBexp a1 a2 -> compA a1 ++ compA a2 ++ [Le]
-        AndBexp b1 b2 -> compB b1 ++ compB b2 ++ [And]
-
-
-compile :: App -> Code
-compile [] = []
-compile (command:rest) =
-    case command of
-        Aexp a -> compA a ++ compile rest
-        Bexp b -> compB b ++ compile rest
-        AssignStm x a -> compA a ++ [Store x] ++ compile rest
-        IfStm x a b -> compB x ++ [Branch (compile a) (compile b)] ++ compile rest
-        WhileStm x a -> [Loop (compB x) (compile a)] ++ compile rest
-
--- Auxiliary function for parse. Receives a string and splits it into a list of tokens (as a list of strings)
-lexer :: String -> [String]
-lexer [] = []
-lexer (char:rest) =
-    case char of
-        ' ' -> lexer rest -- We ignore spaces
-        '(' -> "(" : lexer rest -- Should Seperate Numbers
-        ')' -> ")" : lexer rest -- Should Seperate Numbers
-        ';' -> ";" : lexer rest -- Should Seperate Numbers
-        '=' -> "=" : lexer rest -- Should Seperate Numbers
-        '+' -> "+" : lexer rest -- Should Seperate Numbers
-        '-' -> "-" : lexer rest -- Should Seperate Numbers
-        '*' -> "*" : lexer rest -- Should Seperate Numbers
-        '/' -> "/" : lexer rest -- Should Seperate Numbers
-        _ -> (char :
-            takeWhile (\x -> x /= ' ' && x /= '(' && x /= ')' && x /= ';' && x /= '=' && x /= '+' && x /= '-' && x /= '*' && x /= '/') rest) : -- While x is different of any of these, it will save them in it's own space
-            lexer (dropWhile (\x -> x /= ' ' && x /= '(' && x /= ')' && x /= ';' && x /= '=' && x /= '+' && x /= '-' && x /= '*' && x /= '/') rest) -- Skips over the rest of the characters of the string that aren't these, so it doesnt parse something like ["12", "2"]
+import Compiler
 
 
 
 buildData :: [String] -> [Stm]
 buildData [] = []
+
+buildStm :: [String] -> Stm
+buildStm list = 
+    case head list of
+        "if" -> do
+            let (bexp, rest) = break (== "then") list
+                (stm1, stm2) = break (== "else") (tail rest)
+            IfStm (buildBexp (tail bexp)) (buildStm (tail stm1)) (buildStm (tail stm2))
+        "while" -> do
+            let (bexp, stm) = break (== "do") list
+            WhileStm (buildBexp (tail bexp)) (buildStm (tail stm))
+        _ -> do
+            let (var, aexp) = break (== "=") list
+            AssignStm (head var) (buildAexp (tail aexp))
+
 
 
 lastPlusOrMinus :: [String] -> Maybe String
@@ -70,11 +38,18 @@ buildAexp list =
             let (before, after) = (reverse (drop 1 y), reverse x) where (x, y) = break (== "-") $ reverse list
             SubAexp (buildAexp before) (buildAexp after)
         Nothing -> do
-            if  elem "*" list
+            if  "*" `elem` list
                 then do
                     let (before, after) = (reverse (drop 1 y), reverse x) where (x, y) = break (== "*") $ reverse list
                     MultAexp (buildAexp before) (buildAexp after)
                 else buildAexp (tail (init list))
+
+buildBexp :: [String] -> Bexp
+buildBexp [x] = 
+    case x of
+        "True" -> TruBexp
+        "False" -> FalsBexp
+        _ -> error "Run-time error"
 
 parse :: String -> [Stm]
 parse = buildData . lexer
