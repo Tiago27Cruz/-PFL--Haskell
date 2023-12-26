@@ -49,11 +49,35 @@ lexer (char:rest) =
             takeWhile (\x -> x /= ' ' && x /= '(' && x /= ')' && x /= ';' && x /= '=' && x /= '+' && x /= '-' && x /= '*' && x /= '/') rest) : -- While x is different of any of these, it will save them in it's own space
             lexer (dropWhile (\x -> x /= ' ' && x /= '(' && x /= ')' && x /= ';' && x /= '=' && x /= '+' && x /= '-' && x /= '*' && x /= '/') rest) -- Skips over the rest of the characters of the string that aren't these, so it doesnt parse something like ["12", "2"]
 
+
+
+buildData :: [String] -> [Stm]
+buildData [] = []
+
+
+lastPlusOrMinus :: [String] -> Maybe String
+lastPlusOrMinus strs = if null filtered then Nothing else Just (last filtered)
+  where filtered = filter (\x -> x == "+" || x == "-") strs
+
+buildAexp :: [String] -> Aexp
+buildAexp [x] = Num (read x)
+buildAexp list = 
+    case lastPlusOrMinus list of
+        Just "+" -> do
+            let (before, after) = (reverse (drop 1 y), reverse x) where (x, y) = break (== "+") $ reverse list
+            AddAexp (buildAexp before) (buildAexp after)
+        Just "-" -> do
+            let (before, after) = (reverse (drop 1 y), reverse x) where (x, y) = break (== "-") $ reverse list
+            SubAexp (buildAexp before) (buildAexp after)
+        Nothing -> do
+            if  elem "*" list
+                then do
+                    let (before, after) = (reverse (drop 1 y), reverse x) where (x, y) = break (== "*") $ reverse list
+                    MultAexp (buildAexp before) (buildAexp after)
+                else buildAexp (tail (init list))
+
 parse :: String -> [Stm]
-parse [] = []
-parse (char:rest) =
-    case char of
-        ' ' -> parse rest
+parse = buildData . lexer
 
 run :: (Code, Stack, State) -> (Code, Stack, State)
 run ([], stack, state) = ([], stack, state)
