@@ -59,4 +59,4 @@ data Stm =
   AssignStm String Aexp | IfStm Bexp [Stm] [Stm] | WhileStm Bexp [Stm] | NoopStm | Aexp Aexp | Bexp Bexp
   deriving Show 
 
-type App = [Stm]
+type Program = [Stm]

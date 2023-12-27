@@ -4,7 +4,9 @@ import Compiler
 import Data.Char (isDigit)
 import Data.List (elemIndex)
 
-buildData :: [String] -> App
+-- Receives a list of tokens (as a list of strings) and returns a the built data program (as a list of statements)
+-- 
+buildData :: [String] -> Program
 buildData [] = []
 buildData list = do
     case findNotInner [";"] list of
@@ -15,6 +17,7 @@ buildData list = do
                 _ -> buildStm stm : buildData (tail rest)
         Nothing -> buildData (tail (init list))
 
+-- Builds a statement from a list of tokens that were already separated by buildData
 buildStm :: [String] -> Stm
 buildStm list = 
     case head list of
@@ -35,22 +38,20 @@ buildStm list =
             let (var, aexp) = break (== ":=") list
             AssignStm (head var) (buildAexp (tail aexp))
 
-
-
 findNotInner :: [String] -> [String] -> Maybe Int
-findNotInner targets list = find 0 0 list
+findNotInner targets = find 0 0
   where
     find _ _ [] = Nothing
     find depth index (x:rest) =
         case x of
-        "(" -> find (depth + 1) (index + 1) rest
-        "then" -> find (depth + 1) (index + 1) rest
-        ")" -> find (depth - 1) (index + 1) rest
-        "else" | depth /= 0 -> find (depth - 1) (index + 1) rest
+        "(" -> find (depth + 1) (index + 1) rest -- If it finds a "(" it will increase the depth (as it's entering something nested) and the index
+        "then" -> find (depth + 1) (index + 1) rest -- If it finds a "then" it will increase the depth and the index
+        ")" -> find (depth - 1) (index + 1) rest -- If it finds a ")" it will decrease the depth (as it's leaving something that it's nested) and the index
+        "else" | depth /= 0 -> find (depth - 1) (index + 1) rest -- If it finds a "else" it will decrease the depth (as it's the end of the if) and increase the index
         _ -> do
-            if depth == 0 && (x `elem` targets)
-                then Just index
-                else find depth (index + 1) rest
+            if depth == 0 && (x `elem` targets) -- If it's not nested and it finds what's it's looking for
+                then Just index -- It will return the index
+                else find depth (index + 1) rest -- If it's not what it's looking for, it will increase the index and keep looking
 
 buildAexp :: [String] -> Aexp
 buildAexp [x] = if all isDigit x then Num (read x) else Var x

@@ -26,8 +26,8 @@ compB command =
         LeBexp a1 a2 -> compA a2 ++ compA a1 ++ [Le]
         AndBexp b1 b2 -> compB b1 ++ compB b2 ++ [And]
 
--- Compiles the application into a list of instructions
-compile :: App -> Code
+-- Compiles the program into a list of instructions
+compile :: Program -> Code
 compile [] = []
 compile (command:rest) =
     case command of
@@ -47,13 +47,13 @@ lexer str
     | otherwise = 
     case head str of
         ' ' -> lexer (tail str) -- We ignore spaces
-        '(' -> "(" : lexer (tail str) -- Should Seperate Numbers
-        ')' -> ")" : lexer (tail str) -- Should Seperate Numbers
-        ';' -> ";" : lexer (tail str) -- Should Seperate Numbers
-        '=' -> "=" : lexer (tail str) -- Should Seperate Numbers
-        '+' -> "+" : lexer (tail str) -- Should Seperate Numbers
-        '-' -> "-" : lexer (tail str) -- Should Seperate Numbers
-        '*' -> "*" : lexer (tail str) -- Should Seperate Numbers
+        '(' -> "(" : lexer (tail str) -- Should Seperate the strings
+        ')' -> ")" : lexer (tail str) -- Should Seperate the strings
+        ';' -> ";" : lexer (tail str) -- Should Seperate the strings
+        '=' -> "=" : lexer (tail str) -- Should Seperate the strings
+        '+' -> "+" : lexer (tail str) -- Should Seperate the strings
+        '-' -> "-" : lexer (tail str) -- Should Seperate the strings
+        '*' -> "*" : lexer (tail str) -- Should Seperate the strings
         _ -> (head str :
             takeWhile (\x -> x /= ' ' && x /= '(' && x /= ')' && x /= ';' && x /= '=' && x /= '+' && x /= '-' && x /= '*' && x /= '<' && x /= ':') (tail str)) : -- While x is different of any of these, it will save them in it's own space
             lexer (dropWhile (\x -> x /= ' ' && x /= '(' && x /= ')' && x /= ';' && x /= '=' && x /= '+' && x /= '-' && x /= '*' && x /= '<' && x /= ':') (tail str)) -- Skips over the rest of the characters of the string that aren't these, so it doesnt parse something like ["12", "2"]
