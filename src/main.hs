@@ -99,12 +99,14 @@ buildBexp list =
                             case findNotInner ["=="] (reverse list) of
                                 Just reversedIndex -> do
                                     let index = length list - reversedIndex - 1
-                                    EquBexp (buildAexp [list!!(index-1)]) (buildAexp [list!!(index+1)])
+                                    let (before, after) = splitAt index list
+                                    EquBexp (buildAexp before) (buildAexp (tail after))
                                 Nothing -> do
                                     case findNotInner ["<="] (reverse list) of
                                         Just reversedIndex -> do
                                             let index = length list - reversedIndex - 1
-                                            LeBexp (buildAexp [list!!(index-1)]) (buildAexp [list!!(index+1)])
+                                            let (before, after) = splitAt index list
+                                            LeBexp (buildAexp before) (buildAexp (tail after))
                                         Nothing -> buildBexp (tail (init list))
 
 
