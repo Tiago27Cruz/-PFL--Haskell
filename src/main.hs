@@ -8,7 +8,9 @@ buildData :: [String] -> App
 buildData [] = []
 buildData list = do
     let (stm, rest) = break (== ";") list
-    buildStm stm : buildData (tail rest)
+    case rest of
+        [_] -> [buildStm stm] -- If at last statement
+        _ -> buildStm stm : buildData (tail rest)
 
 buildStm :: [String] -> Stm
 buildStm list = 
@@ -21,7 +23,7 @@ buildStm list =
             let (bexp, stm) = break (== "do") list
             WhileStm (buildBexp (tail bexp)) [buildStm (tail stm)]
         _ -> do
-            let (var, aexp) = break (== "=") list
+            let (var, aexp) = break (== ":=") list
             AssignStm (head var) (buildAexp (tail aexp))
 
 

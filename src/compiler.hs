@@ -43,6 +43,7 @@ lexer [] = []
 lexer str
     | "<=" `isPrefixOf` str = "<=" : lexer (drop 2 str)
     | "==" `isPrefixOf` str = "==" : lexer (drop 2 str)
+    | ":=" `isPrefixOf` str = ":=" : lexer (drop 2 str)
     | otherwise = 
     case head str of
         ' ' -> lexer (tail str) -- We ignore spaces
@@ -54,6 +55,6 @@ lexer str
         '-' -> "-" : lexer (tail str) -- Should Seperate Numbers
         '*' -> "*" : lexer (tail str) -- Should Seperate Numbers
         _ -> (head str :
-            takeWhile (\x -> x /= ' ' && x /= '(' && x /= ')' && x /= ';' && x /= '=' && x /= '+' && x /= '-' && x /= '*' && x /= '<') (tail str)) : -- While x is different of any of these, it will save them in it's own space
-            lexer (dropWhile (\x -> x /= ' ' && x /= '(' && x /= ')' && x /= ';' && x /= '=' && x /= '+' && x /= '-' && x /= '*' && x /= '<') (tail str)) -- Skips over the rest of the characters of the string that aren't these, so it doesnt parse something like ["12", "2"]
+            takeWhile (\x -> x /= ' ' && x /= '(' && x /= ')' && x /= ';' && x /= '=' && x /= '+' && x /= '-' && x /= '*' && x /= '<' && x /= ':') (tail str)) : -- While x is different of any of these, it will save them in it's own space
+            lexer (dropWhile (\x -> x /= ' ' && x /= '(' && x /= ')' && x /= ';' && x /= '=' && x /= '+' && x /= '-' && x /= '*' && x /= '<' && x /= ':') (tail str)) -- Skips over the rest of the characters of the string that aren't these, so it doesnt parse something like ["12", "2"]
 
