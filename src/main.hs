@@ -2,6 +2,7 @@ import Assembler
 import DataStructs
 import Compiler
 import Data.Char (isDigit)
+import Data.List (elemIndex)
 
 buildData :: [String] -> App
 buildData [] = []
@@ -25,26 +26,36 @@ buildStm list =
 
 
 
-lastPlusOrMinus :: [String] -> Maybe String
-lastPlusOrMinus strs = if null filtered then Nothing else Just (last filtered)
-  where filtered = filter (\x -> x == "+" || x == "-") strs
+findNotInParens :: [String] -> [String] -> Maybe Int
+findNotInParens targets list = find 0 0 list
+  where
+    find _ _ [] = Nothing
+    find depth index (x:rest) =
+        case x of
+        "(" -> find (depth + 1) (index + 1) rest
+        ")" -> find (depth - 1) (index + 1) rest
+        _ -> do
+            if depth == 0 && (x `elem` targets)
+                then Just index
+                else find depth (index + 1) rest
 
 buildAexp :: [String] -> Aexp
 buildAexp [x] = if all isDigit x then Num (read x) else Var x
 buildAexp list = 
-    case lastPlusOrMinus list of
-        Just "+" -> do
-            let (before, after) = (reverse (drop 1 y), reverse x) where (x, y) = break (== "+") $ reverse list
-            AddAexp (buildAexp before) (buildAexp after)
-        Just "-" -> do
-            let (before, after) = (reverse (drop 1 y), reverse x) where (x, y) = break (== "-") $ reverse list
-            SubAexp (buildAexp before) (buildAexp after)
+    case findNotInParens ["+","-"] (reverse list) of
+        Just reversedIndex -> do
+            let index = length list - reversedIndex - 1
+            let (before, after) = splitAt index list
+            if list!!index == "+"
+                then AddAexp (buildAexp before) (buildAexp (tail after))
+                else SubAexp (buildAexp before) (buildAexp (tail after))
         Nothing -> do
-            if  "*" `elem` list
-                then do
-                    let (before, after) = (reverse (drop 1 y), reverse x) where (x, y) = break (== "*") $ reverse list
-                    MultAexp (buildAexp before) (buildAexp after)
-                else buildAexp (tail (init list))
+            case findNotInParens ["*"] (reverse list) of
+                Just reversedIndex -> do
+                    let index = length list - reversedIndex - 1
+                    let (before, after) = splitAt index list
+                    MultAexp (buildAexp before) (buildAexp (tail after))
+                Nothing -> buildAexp (tail (init list))
 
 buildBexp :: [String] -> Bexp
 buildBexp [x] = 
