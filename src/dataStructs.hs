@@ -52,7 +52,7 @@ data Aexp =
   deriving Show
 
 data Bexp = 
-  TruBexp | FalsBexp | NegBexp Bexp | EquBexp Aexp Aexp | LeBexp Aexp Aexp | AndBexp Bexp Bexp 
+  TruBexp | FalsBexp | NegBexp Bexp | EquBexp Aexp Aexp | EqBexp Bexp Bexp | LeBexp Aexp Aexp | AndBexp Bexp Bexp 
   deriving Show
 
 data Stm = 

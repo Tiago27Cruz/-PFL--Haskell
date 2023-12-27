@@ -16,7 +16,7 @@ buildStm list =
         "if" -> do
             let (bexp, rest) = break (== "then") list
                 (stm1, stm2) = break (== "else") (tail rest)
-            IfStm (buildBexp (tail bexp)) [buildStm (tail stm1)] [buildStm (tail stm2)]
+            IfStm (buildBexp (tail bexp)) [buildStm stm1] [buildStm (tail stm2)]
         "while" -> do
             let (bexp, stm) = break (== "do") list
             WhileStm (buildBexp (tail bexp)) [buildStm (tail stm)]
@@ -63,6 +63,35 @@ buildBexp [x] =
         "True" -> TruBexp
         "False" -> FalsBexp
         _ -> error "Run-time error"
+buildBexp list = 
+    case findNotInParens ["and"] (reverse list) of
+        Just reversedIndex -> do
+            let index = length list - reversedIndex - 1
+            let (before, after) = splitAt index list
+            AndBexp (buildBexp before) (buildBexp (tail after))
+        Nothing -> do
+            case findNotInParens ["="] (reverse list) of
+                Just reversedIndex -> do
+                    let index = length list - reversedIndex - 1
+                    let (before, after) = splitAt index list
+                    EqBexp (buildBexp before) (buildBexp (tail after))
+                Nothing -> do
+                    case findNotInParens ["not"] (reverse list) of
+                        Just reversedIndex -> do
+                            let index = length list - reversedIndex - 1
+                            let after = drop index list
+                            NegBexp (buildBexp (tail after))
+                        Nothing -> do
+                            case findNotInParens ["=="] (reverse list) of
+                                Just reversedIndex -> do
+                                    let index = length list - reversedIndex - 1
+                                    EquBexp (buildAexp [list!!(index-1)]) (buildAexp [list!!(index+1)])
+                                Nothing -> do
+                                    case findNotInParens ["<="] (reverse list) of
+                                        Just reversedIndex -> do
+                                            let index = length list - reversedIndex - 1
+                                            LeBexp (buildAexp [list!!(index-1)]) (buildAexp [list!!(index+1)])
+                                        Nothing -> buildBexp (tail (init list))
 
 
 parse :: String -> [Stm]
