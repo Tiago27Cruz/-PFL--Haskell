@@ -21,7 +21,9 @@ buildStm list =
             IfStm (buildBexp (tail bexp)) [buildStm stm1] [buildStm (tail stm2)]
         "while" -> do
             let (bexp, stm) = break (== "do") list
-            WhileStm (buildBexp (tail bexp)) [buildStm (tail stm)]
+            case head (tail stm) of
+                "(" -> WhileStm (buildBexp (tail bexp)) (buildData (drop 2 (init stm)))
+                _ -> WhileStm (buildBexp (tail bexp)) [buildStm (tail stm)]
         _ -> do
             let (var, aexp) = break (== ":=") list
             AssignStm (head var) (buildAexp (tail aexp))
