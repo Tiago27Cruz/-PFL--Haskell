@@ -163,7 +163,7 @@ buildBexp list =
                                         Just reversedIndex -> do -- If it finds it
                                             let index = length list - reversedIndex - 1 -- It will calculate the real index of the last "<=" that's not nested, since it's reversed
                                             let (before, after) = splitAt index list -- It will split the list in two, before and after the last "<=" that's not nested
-                                            LeBexp (buildAexp before) (buildAexp (tail after)) -- It will return a LeBexp wuth the built arithmetic expressions of both lists obtained (before and after the "<=")
+                                            LeBexp (buildAexp before) (buildAexp (tail after)) -- It will return a LeBexp with the built arithmetic expressions of both lists obtained (before and after the "<=")
                                         Nothing -> buildBexp (tail (init list)) -- If it doesn't find it, then any expression left is between parenthesis, so it will remove the first and last element of the list (the parenthesis) and call itself again (this is done last since everything between parenthesis has higher priority than what is outside of it)
 
 
