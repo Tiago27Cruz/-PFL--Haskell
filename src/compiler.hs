@@ -10,9 +10,9 @@ compA command =
     case command of
         Num n -> [Push n]
         Var x -> [Fetch x]
-        AddAexp a1 a2 -> compA a2 ++ compA a1 ++ [Add]
-        MultAexp a1 a2 -> compA a2 ++ compA a1 ++ [Mult]
-        SubAexp a1 a2 -> compA a2 ++ compA a1 ++ [Sub]
+        AddAexp a1 a2 -> compA a2 ++ compA a1 ++ [Add] -- a2 comes before a1 because the stack is LIFO
+        MultAexp a1 a2 -> compA a2 ++ compA a1 ++ [Mult] -- a2 comes before a1 because the stack is LIFO
+        SubAexp a1 a2 -> compA a2 ++ compA a1 ++ [Sub] -- a2 comes before a1 because the stack is LIFO
 
 -- Compiles a boolean expression into a list of instructions
 compB :: Bexp -> Code
@@ -23,7 +23,7 @@ compB command =
         NegBexp b -> compB b ++ [Neg]
         EqBexp a1 a2 -> compB a1 ++ compB a2 ++ [Equ]
         EquBexp a1 a2 -> compA a1 ++ compA a2 ++ [Equ]
-        LeBexp a1 a2 -> compA a2 ++ compA a1 ++ [Le]
+        LeBexp a1 a2 -> compA a2 ++ compA a1 ++ [Le] -- a2 comes before a1 because the stack is LIFO
         AndBexp b1 b2 -> compB b1 ++ compB b2 ++ [And]
 
 -- Compiles the program into a list of instructions
@@ -41,19 +41,19 @@ compile (command:rest) =
 lexer :: String -> [String]
 lexer [] = []
 lexer str
-    | "<=" `isPrefixOf` str = "<=" : lexer (drop 2 str)
-    | "==" `isPrefixOf` str = "==" : lexer (drop 2 str)
-    | ":=" `isPrefixOf` str = ":=" : lexer (drop 2 str)
+    | "<=" `isPrefixOf` str = "<=" : lexer (drop 2 str) -- If the string starts with "<=", it will add it to the list of tokens and call lexer again with the rest of the string
+    | "==" `isPrefixOf` str = "==" : lexer (drop 2 str) -- If the string starts with "==", it will add it to the list of tokens and call lexer again with the rest of the string
+    | ":=" `isPrefixOf` str = ":=" : lexer (drop 2 str) -- If the string starts with ":=", it will add it to the list of tokens and call lexer again with the rest of the string
     | otherwise = 
     case head str of
-        ' ' -> lexer (tail str) -- We ignore spaces
-        '(' -> "(" : lexer (tail str) -- Should Seperate the strings
-        ')' -> ")" : lexer (tail str) -- Should Seperate the strings
-        ';' -> ";" : lexer (tail str) -- Should Seperate the strings
-        '=' -> "=" : lexer (tail str) -- Should Seperate the strings
-        '+' -> "+" : lexer (tail str) -- Should Seperate the strings
-        '-' -> "-" : lexer (tail str) -- Should Seperate the strings
-        '*' -> "*" : lexer (tail str) -- Should Seperate the strings
+        ' ' -> lexer (tail str) -- We ignore spaces and call lexer again with the rest of the string
+        '(' -> "(" : lexer (tail str) -- If the string starts with "(", it will add it to the list of tokens and call lexer again with the rest of the string
+        ')' -> ")" : lexer (tail str) -- If the string starts with ")", it will add it to the list of tokens and call lexer again with the rest of the string
+        ';' -> ";" : lexer (tail str) -- If the string starts with ";", it will add it to the list of tokens and call lexer again with the rest of the string
+        '=' -> "=" : lexer (tail str) -- If the string starts with "=", it will add it to the list of tokens and call lexer again with the rest of the string
+        '+' -> "+" : lexer (tail str) -- If the string starts with "+", it will add it to the list of tokens and call lexer again with the rest of the string
+        '-' -> "-" : lexer (tail str) -- If the string starts with "-", it will add it to the list of tokens and call lexer again with the rest of the string
+        '*' -> "*" : lexer (tail str) -- If the string starts with "*", it will add it to the list of tokens and call lexer again with the rest of the string
         _ -> (head str :
             takeWhile (\x -> x /= ' ' && x /= '(' && x /= ')' && x /= ';' && x /= '=' && x /= '+' && x /= '-' && x /= '*' && x /= '<' && x /= ':') (tail str)) : -- While x is different of any of these, it will save them in it's own space
             lexer (dropWhile (\x -> x /= ' ' && x /= '(' && x /= ')' && x /= ';' && x /= '=' && x /= '+' && x /= '-' && x /= '*' && x /= '<' && x /= ':') (tail str)) -- Skips over the rest of the characters of the string that aren't these, so it doesnt parse something like ["12", "2"]
