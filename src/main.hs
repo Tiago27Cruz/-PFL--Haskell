@@ -18,14 +18,14 @@ run (code:rest, stack, state) =
         And -> run (rest, ande stack, state)
         Neg -> run (rest, neg stack, state)
         Fetch x -> run(rest, fetch x stack state, state)
-        Store x -> do
-            let (newStack, newState) = store x stack state
+        Store x ->
+            let (newStack, newState) = store x stack state in
             run(rest, newStack, newState)
-        Noop -> do
-            let (newStack, newState) = noop stack state
+        Noop ->
+            let (newStack, newState) = noop stack state in
             run(rest, newStack, newState)
-        Branch c1 c2 -> do
-            let (newRest, newStack) = branch c1 c2 stack
+        Branch c1 c2 ->
+            let (newRest, newStack) = branch c1 c2 stack in
             run(newRest++rest, newStack, state)
         Loop c1 c2 -> run(loop c1 c2 ++ rest, stack, state)
 
