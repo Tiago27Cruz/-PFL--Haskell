@@ -7,10 +7,12 @@ import Data.List (elemIndex)
 buildData :: [String] -> App
 buildData [] = []
 buildData list = do
-    let (stm, rest) = break (== ";") list
-    case rest of
-        [_] -> [buildStm stm] -- If at last statement
-        _ -> buildStm stm : buildData (tail rest)
+    case findNotInParens [";"] list of
+        Just index -> do
+            let (stm, rest) = splitAt index list
+            case rest of
+                [_] -> [buildStm stm] -- If at last statement
+                _ -> buildStm stm : buildData (tail rest)
 
 buildStm :: [String] -> Stm
 buildStm list = 
