@@ -11,7 +11,7 @@ data Inst =
 type Code = [Inst]
 
 -- The values of something inside a stack are either an Integer or a boolean.
-data StackValue = Value Integer | TT | FF deriving (Show, Eq)
+data StackValue = Value Integer | TT | FF deriving Show
 type Stack = [StackValue]
 
 type Key = String
