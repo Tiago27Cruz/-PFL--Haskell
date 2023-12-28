@@ -66,7 +66,8 @@ buildData list = do
     case findNotInner [";"] list of -- It will look for the first ";" that's not nested or that belongs to an if statement
         Just index -> do -- If it finds it
             let (stm, rest) = splitAt index list -- It will split the list in two, before and after the first ";" that's not nested
-            case rest of
+            if head stm == "(" then buildData (tail (init stm)) -- If it's actually multiple nested statements and not one
+            else case rest of
                 [_] -> [buildStm stm] -- If it's at the last statement
                 _ -> buildStm stm : buildData (tail rest) -- If it's not at the last statement, it will build the statement and call itself again with the rest of the list
         Nothing -> buildData (tail (init list)) -- If it doesn't find it, it will remove the first and last element of the list (the parentheses) and call itself again (This is only reached when it receives multiple statements that are altogether in between parentheses)
