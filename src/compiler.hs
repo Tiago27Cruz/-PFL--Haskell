@@ -69,7 +69,7 @@ buildData list = do
             case rest of
                 [_] -> [buildStm stm] -- If it's at the last statement
                 _ -> buildStm stm : buildData (tail rest) -- If it's not at the last statement, it will build the statement and call itself again with the rest of the list
-        Nothing -> buildData (tail (init list)) -- If it doesn't find it, it will remove the first and last element of the list (the parenthesis) and call itself again (This is only reached when it receives multiple statements that are altogether in between parenthesis)
+        Nothing -> buildData (tail (init list)) -- If it doesn't find it, it will remove the first and last element of the list (the parentheses) and call itself again (This is only reached when it receives multiple statements that are altogether in between parentheses)
 
 -- Builds a statement from a list of tokens that were already separated by buildData
 buildStm :: [String] -> Stm
@@ -92,7 +92,7 @@ buildStm list =
             let (var, aexp) = break (== ":=") list -- It will split the list in two, before and after the ":=", since before it has a variable and after it has an arithmetic expression
             AssignStm (head var) (buildAexp (tail aexp)) -- It will return an AssignStm with the variable and the built arithmetic expression obtained
 
--- Finds the first ocurrence in a list of tokens (as a list of strings), of any token inside a given list of tokens (e.g. ["+","-"]), that's not nested and returns it's index. A token is considered nested if it's between parenthesis or inside an if statement
+-- Finds the first ocurrence in a list of tokens (as a list of strings), of any token inside a given list of tokens (e.g. ["+","-"]), that's not nested and returns it's index. A token is considered nested if it's between parentheses or inside an if statement
 findNotInner :: [String] -> [String] -> Maybe Int
 findNotInner targets = find 0 0 -- It will call the find function with depth 0, index 0 and the list of tokens
   where
@@ -125,7 +125,7 @@ buildAexp list =
                     let index = length list - reversedIndex - 1 -- It will calculate the real index of the last "*" that's not nested, since it's reversed
                     let (before, after) = splitAt index list -- It will split the list in two, before and after the last "*" that's not nested
                     MultAexp (buildAexp before) (buildAexp (tail after)) -- It will return a MultAexp with the built arithmetic expressions of both lists obtained (before and after the "*")
-                Nothing -> buildAexp (tail (init list)) -- If it doesn't find it, then any expression left is between parenthesis, so it will remove the first and last element of the list (the parenthesis) and call itself again (this is done last since everything between parenthesis has higher priority than what is outside of it).
+                Nothing -> buildAexp (tail (init list)) -- If it doesn't find it, then any expression left is between parentheses, so it will remove the first and last element of the list (the parentheses) and call itself again (this is done last since everything between parentheses has higher priority than what is outside of it).
 
 -- Builds a boolean expression from a list of tokens
 buildBexp :: [String] -> Bexp
@@ -164,7 +164,7 @@ buildBexp list =
                                             let index = length list - reversedIndex - 1 -- It will calculate the real index of the last "<=" that's not nested, since it's reversed
                                             let (before, after) = splitAt index list -- It will split the list in two, before and after the last "<=" that's not nested
                                             LeBexp (buildAexp before) (buildAexp (tail after)) -- It will return a LeBexp with the built arithmetic expressions of both lists obtained (before and after the "<=")
-                                        Nothing -> buildBexp (tail (init list)) -- If it doesn't find it, then any expression left is between parenthesis, so it will remove the first and last element of the list (the parenthesis) and call itself again (this is done last since everything between parenthesis has higher priority than what is outside of it)
+                                        Nothing -> buildBexp (tail (init list)) -- If it doesn't find it, then any expression left is between parentheses, so it will remove the first and last element of the list (the parentheses) and call itself again (this is done last since everything between parentheses has higher priority than what is outside of it)
 
 
 -- Receives a string (the program code written in the language) and returns the program
