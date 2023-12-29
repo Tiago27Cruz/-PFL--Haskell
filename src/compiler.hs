@@ -32,8 +32,6 @@ compile :: Program -> Code
 compile [] = []
 compile (command:rest) =
     case command of
-        Aexp a -> compA a ++ compile rest
-        Bexp b -> compB b ++ compile rest
         AssignStm x a -> compA a ++ [Store x] ++ compile rest
         IfStm x a b -> compB x ++ [Branch (compile a) (compile b)] ++ compile rest
         WhileStm x a -> Loop (compB x) (compile a) : compile rest

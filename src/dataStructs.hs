@@ -56,7 +56,7 @@ data Bexp =
   deriving Show
 
 data Stm = 
-  AssignStm String Aexp | IfStm Bexp [Stm] [Stm] | WhileStm Bexp [Stm] | NoopStm | Aexp Aexp | Bexp Bexp
+  AssignStm String Aexp | IfStm Bexp [Stm] [Stm] | WhileStm Bexp [Stm] 
   deriving Show 
 
 type Program = [Stm]
