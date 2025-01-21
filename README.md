@@ -1,5 +1,7 @@
 # Interpreter and Compiler using Haskell
 
+Developed for Functional and Logic Programming Course (PFL) @ FEUP - L.EIC 
+
 The goal of this project is to develop an interpreter and compiler for a small imperative language for a low-level machine with configurations of the form (c, e, s) where c is a list of instructions to be executed, e is the evaluation stack, and s is the storage.
 
 Grade: ~18/20
